@@ -40,7 +40,7 @@ class PathFinder:
             if currentPoint == endPoint:
                 return path
 
-            for neighbour in self.neighbours(currentPoint, diagonals=False):
+            for neighbour in self.neighbours(currentPoint):
                 if neighbour not in visited:
                     visited.add(neighbour)
                     newPath = list(path)
@@ -50,29 +50,48 @@ class PathFinder:
         return []
 
     def neighbours(self, point, diagonals=True):
+        '''
+        Get all adjacent point
+        '''
         adjPoints = []
         if diagonals:
-            for i in range(point.x-1, point.x+2):
-                for j in range(point.y-1, point.y+2):
-                    if Point(i, j) != point:
-                        adjPoints.append(Point(i, j))
-        else:
             for i in range(-1, 2):
-                adjPoints.append(Point(point.x + i, point.y))
-                adjPoints.append(Point(point.x, point.y + i))
+                # check if neighbour x is in the grid
+                neig_x = min(max(point.x+i, 0), self.rows-1)
+                for j in range(-1, 2):
+                    # chech if neighbour y is in the grid
+                    neig_y = min(max(point.y+j, 0), self.cols-1)
+                    # check if neighbour is not our point
+                    if point.x == neig_x and point.y == neig_y:
+                        continue
+                    neigbour = Point(neig_x, neig_y)
+                    # check if the neighbour is an obstacle
+                    if self.is_obstacle(neigbour):
+                        continue
+                    adjPoints.append(neigbour)
         return adjPoints
+
+    def is_obstacle(self, point):
+        return self._field[point.x][point.y] == '#'
+
+    @property
+    def rows(self):
+        return len(self._field[0])
+
+    @property
+    def cols(self):
+        return len(self._field)
 
 
 testField = [
-    ['0', '0', '0', '0', '0', '0', '0', '0', '0'],
-    ['0', '0', '0', '0', '0', '0', '0', '0', '0'],
-    ['0', '0', '0', '0', '0', '0', '0', '0', '0'],
-    ['0', '0', '0', '0', '0', '0', '0', '0', '0'],
-    ['0', '0', '0', '0', '0', '0', '0', '0', '0'],
-    ['0', '0', '0', '0', '0', '0', '0', '0', '0'],
-    ['0', '0', '0', '0', '0', '0', '0', '0', '0'],
-    ['0', '0', '0', '0', '0', '0', '0', '0', '0'],
-    ['0', '0', '0', '0', '0', '0', '0', '0', '0'],
+    ['0', '#', '0', '0', '0', '0', '0', '0', ],
+    ['0', '#', '0', '0', '0', '0', '0', '0', ],
+    ['0', '#', '0', '#', '0', '0', '0', '0', ],
+    ['0', '0', '0', '#', '0', '0', '0', '#', ],
+    ['0', '#', '0', '0', '0', '#', '0', '0', ],
+    ['0', '0', '#', '0', '0', '#', '0', '0', ],
+    ['0', '0', '0', '0', '0', '#', '#', '0', ],
+    ['0', '0', '0', '0', '0', '0', '#', '0', ],
 ]
 a = PathFinder(testField)
-print(a.shortest_path(Point(0, 0), Point(8, 8)))
+print(a.shortest_path(Point(0, 0), Point(7, 7)))
