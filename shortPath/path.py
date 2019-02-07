@@ -3,7 +3,7 @@ class Point:
     Represents a point
     '''
 
-    def __init__(self, x=0, y=0):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
 
@@ -49,26 +49,25 @@ class PathFinder:
         # Path not found
         return []
 
-    def neighbours(self, point, diagonals=True):
+    def neighbours(self, point):
         '''
         Get all adjacent point
         '''
         adjPoints = []
-        if diagonals:
-            for i in range(-1, 2):
-                # check if neighbour x is in the grid
-                neig_x = min(max(point.x+i, 0), self.rows-1)
-                for j in range(-1, 2):
-                    # chech if neighbour y is in the grid
-                    neig_y = min(max(point.y+j, 0), self.cols-1)
-                    # check if neighbour is not our point
-                    if point.x == neig_x and point.y == neig_y:
-                        continue
-                    neigbour = Point(neig_x, neig_y)
-                    # check if the neighbour is an obstacle
-                    if self.is_obstacle(neigbour):
-                        continue
-                    adjPoints.append(neigbour)
+        for i in range(-1, 2):
+            # check if neighbour x is in the grid
+            neig_x = min(max(point.x+i, 0), self.rows-1)
+            for j in range(-1, 2):
+                # chech if neighbour y is in the grid
+                neig_y = min(max(point.y+j, 0), self.cols-1)
+                # check if neighbour is not our point
+                if point.x == neig_x and point.y == neig_y:
+                    continue
+                neigbour = Point(neig_x, neig_y)
+                # check if the neighbour is anobstacle
+                if self.is_obstacle(neigbour):
+                    continue
+                adjPoints.append(neigbour)
         return adjPoints
 
     def is_obstacle(self, point):
@@ -82,16 +81,15 @@ class PathFinder:
     def cols(self):
         return len(self._field)
 
-
-testField = [
-    ['0', '#', '0', '0', '0', '0', '0', '0', ],
-    ['0', '#', '0', '0', '0', '0', '0', '0', ],
-    ['0', '#', '0', '#', '0', '0', '0', '0', ],
-    ['0', '0', '0', '#', '0', '0', '0', '#', ],
-    ['0', '#', '0', '0', '0', '#', '0', '0', ],
-    ['0', '0', '#', '0', '0', '#', '0', '0', ],
-    ['0', '0', '0', '0', '0', '#', '#', '0', ],
-    ['0', '0', '0', '0', '0', '0', '#', '0', ],
-]
-a = PathFinder(testField)
-print(a.shortest_path(Point(0, 0), Point(7, 7)))
+    # testField = [
+    #     ['0', '#', '0', '0', '0', '0', '0', '0', ],
+    #     ['0', '#', '0', '0', '0', '0', '0', '0', ],
+    #     ['0', '#', '0', '#', '0', '0', '0', '0', ],
+    #     ['0', '0', '0', '#', '0', '0', '0', '#', ],
+    #     ['0', '#', '0', '0', '0', '#', '0', '0', ],
+    #     ['0', '0', '#', '0', '0', '#', '0', '0', ],
+    #     ['0', '0', '0', '0', '0', '#', '#', '0', ],
+    #     ['0', '0', '0', '0', '0', '0', '#', '0', ],
+    # ]
+    # a = PathFinder(testField)
+    # print(a.shortest_path(Point(0, 0), Point(7, 7)))
