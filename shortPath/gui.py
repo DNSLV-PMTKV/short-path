@@ -1,5 +1,5 @@
 from PIL import Image, ImageDraw
-from tkinter import Tk, Canvas, Button, Label
+from tkinter import Tk, Canvas, Button
 from path import Point, PathFinder
 
 WIDTH = 300
@@ -14,13 +14,13 @@ class grid:
         self.image = Image.new('RGB', (width, height), 'white')
         self.draw = ImageDraw.Draw(self.image)
 
-        self.hasStart = False
-        self.hasEnd = False
+        self.startPointLoc = []
+        self.endPointLoc = []
 
-        self.grid.bind('<Button-2>', self.drawObstacle)
-        self.grid.bind('<B2-Motion>', self.drawObstacle)
-        self.grid.bind('<Button-1>', self.drawStartPoint)
-        self.grid.bind('<Button-3>', self.drawEndPoint)
+        self.grid.bind('<Button-2>', self._drawObstacle)
+        self.grid.bind('<B2-Motion>', self._drawObstacle)
+        self.grid.bind('<Button-1>', self._drawStartPoint)
+        self.grid.bind('<Button-3>', self._drawEndPoint)
 
     def drawGrid(self):
         for x in range(PIXEL, HEIGHT, PIXEL):
@@ -28,30 +28,52 @@ class grid:
         for y in range(PIXEL, WIDTH, PIXEL):
             self.grid.create_line(y, 0, y, HEIGHT, fill="grey")
 
-    def drawObstacle(self, event):
+    def _drawObstacle(self, event):
         x, y = event.x // PIXEL, event.y // PIXEL
         self.grid.create_rectangle(
             x * PIXEL, y * PIXEL, x * PIXEL + PIXEL, y * PIXEL + PIXEL, fill='black')
         self.draw.rectangle(
             [x * PIXEL, y * PIXEL, x * PIXEL + PIXEL, y * PIXEL + PIXEL], fill='black')
 
-    def drawStartPoint(self, event):
+    def _drawStartPoint(self, event):
         x, y = event.x // PIXEL, event.y // PIXEL
-        if not self.hasStart:
+        if not self.startPointLoc:
+            self.startPointLoc.append((x, y))
             self.grid.create_rectangle(
                 x * PIXEL, y * PIXEL, x * PIXEL + PIXEL, y * PIXEL + PIXEL, fill='blue')
             self.draw.rectangle(
                 [x * PIXEL, y * PIXEL, x * PIXEL + PIXEL, y * PIXEL + PIXEL], fill='blue')
-            self.hasStart = True
+        else:
+            x1, y1 = self.startPointLoc.pop(0)
+            self.grid.create_rectangle(
+                x1 * PIXEL, y1 * PIXEL, x1 * PIXEL + PIXEL, y1 * PIXEL + PIXEL, fill='white', outline='gray')
+            self.draw.rectangle(
+                [x1 * PIXEL, y1 * PIXEL, x1 * PIXEL + PIXEL, y1 * PIXEL + PIXEL], fill='white', outline='gray')
+            self.startPointLoc.append((x, y))
+            self.grid.create_rectangle(
+                x * PIXEL, y * PIXEL, x * PIXEL + PIXEL, y * PIXEL + PIXEL, fill='blue')
+            self.draw.rectangle(
+                [x * PIXEL, y * PIXEL, x * PIXEL + PIXEL, y * PIXEL + PIXEL], fill='blue')
 
-    def drawEndPoint(self, event):
+    def _drawEndPoint(self, event):
         x, y = event.x // PIXEL, event.y // PIXEL
-        if not self.hasEnd:
+        if not self.endPointLoc:
+            self.endPointLoc.append((x, y))
             self.grid.create_rectangle(
                 x * PIXEL, y * PIXEL, x * PIXEL + PIXEL, y * PIXEL + PIXEL, fill='red')
             self.draw.rectangle(
                 [x * PIXEL, y * PIXEL, x * PIXEL + PIXEL, y * PIXEL + PIXEL], fill='red')
-            self.hasEnd = True
+        else:
+            x1, y1 = self.endPointLoc.pop(0)
+            self.grid.create_rectangle(
+                x1 * PIXEL, y1 * PIXEL, x1 * PIXEL + PIXEL, y1 * PIXEL + PIXEL, fill='white', outline='gray')
+            self.draw.rectangle(
+                [x1 * PIXEL, y1 * PIXEL, x1 * PIXEL + PIXEL, y1 * PIXEL + PIXEL], fill='white', outline='gray')
+            self.endPointLoc.append((x, y))
+            self.grid.create_rectangle(
+                x * PIXEL, y * PIXEL, x * PIXEL + PIXEL, y * PIXEL + PIXEL, fill='red')
+            self.draw.rectangle(
+                [x * PIXEL, y * PIXEL, x * PIXEL + PIXEL, y * PIXEL + PIXEL], fill='red')
 
     def cellColor(self, x, y):
         r, g, b = self.image.getpixel((x+1, y+1))
