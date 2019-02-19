@@ -2,20 +2,22 @@ from PIL import Image, ImageDraw
 from tkinter import Tk, Canvas, Button
 from path import Point, PathFinder
 
-WIDTH = 300
-HEIGHT = 300
+WIDTH = 600
+HEIGHT = 600
 PIXEL = 30
 
 
 class grid:
-    def __init__(self, master, width, height, *argv, **kwargs):
-        self.grid = Canvas(master, width=width, height=height, *argv, **kwargs)
+    def __init__(self, master, *argv, **kwargs):
+        self.grid = Canvas(master, *argv, **kwargs)
         self.grid.pack()
-        self.image = Image.new('RGB', (width, height), 'white')
+        self.image = Image.new('RGB', (WIDTH, HEIGHT), 'white')
         self.draw = ImageDraw.Draw(self.image)
 
         self.startPointLoc = []
         self.endPointLoc = []
+
+        self.gridArray = []
 
         self.grid.bind('<Button-2>', self._drawObstacle)
         self.grid.bind('<B2-Motion>', self._drawObstacle)
@@ -80,19 +82,22 @@ class grid:
         return r, g, b
 
     def toArray(self):
-        arr = []
         for x in range(0, WIDTH, PIXEL):
-            arr.append([])
+            self.gridArray.append([])
             for y in range(0, HEIGHT, PIXEL):
-                arr[x // PIXEL].append(0)
+                self.gridArray[x // PIXEL].append(0)
                 if(self.cellColor(x, y) == (0, 0, 255)):
                     start = [x, y]
+                    self.gridArray[x // PIXEL][y // PIXEL] = 'S'
                 if(self.cellColor(x, y) == (255, 0, 0)):
                     end = [x, y]
+                    self.gridArray[x // PIXEL][y // PIXEL] = 'E'
                 if(self.cellColor(x, y) == (0, 0, 0)):
-                    arr[x // PIXEL][y // PIXEL] = '#'
-        print(arr, start, end)
-        return arr, start, end
+                    self.gridArray[x // PIXEL][y // PIXEL] = '#'
+        for i in self.gridArray:
+            print(i)
+        print(start, end)
+        return self.gridArray, start, end
 
     def getShortestPath(self):
         field, startXY, endXY = self.toArray()
@@ -114,10 +119,16 @@ class grid:
                     [i.x * PIXEL, i.y * PIXEL, i.x * PIXEL + PIXEL, i.y * PIXEL + PIXEL], fill='orange')
 
     def clearAll(self):
-        self.grid.delete('all')
+        self.grid.delete("all")
+        del self.image
+        del self.draw
+        self.image = Image.new('RGB', (WIDTH, HEIGHT), 'white')
+        self.draw = ImageDraw.Draw(self.image)
+        self.startPointLoc = []
+        self.endPointLoc = []
+
+        self.gridArray = []
         self.drawGrid()
-        self.hasStart = False
-        self.hasEnd = False
 
 
 app = Tk()
