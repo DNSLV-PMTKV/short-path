@@ -29,7 +29,7 @@ class PathFinder:
     def __init__(self, field):
         self._field = field
 
-    def shortest_path(self, startPoint, endPoint):
+    def shortest_path(self, startPoint, endPoint, diagonals=False):
         queue = []
         visited = set()
         queue.append([startPoint])
@@ -40,7 +40,7 @@ class PathFinder:
             if currentPoint == endPoint:
                 return path
 
-            for neighbour in self.neighbours(currentPoint):
+            for neighbour in self.neighbours(currentPoint, diagonals=diagonals):
                 if neighbour not in visited:
                     visited.add(neighbour)
                     newPath = list(path)
@@ -49,25 +49,38 @@ class PathFinder:
         # Path not found
         return []
 
-    def neighbours(self, point):
+    def neighbours(self, point, diagonals=False):
         '''
         Get all adjacent point
         '''
         adjPoints = []
-        for i in range(-1, 2):
-            # check if neighbour x is in the grid
-            neig_x = min(max(point.x+i, 0), self.rows-1)
-            for j in range(-1, 2):
-                # chech if neighbour y is in the grid
-                neig_y = min(max(point.y+j, 0), self.cols-1)
-                # check if neighbour is not our point
+        if diagonals:
+            for i in range(-1, 2):
+                # check if neighbour x is in the grid
+                neig_x = min(max(point.x+i, 0), self.rows-1)
+                for j in range(-1, 2):
+                    # chech if neighbour y is in the grid
+                    neig_y = min(max(point.y+j, 0), self.cols-1)
+                    # check if neighbour is not our point
+                    if point.x == neig_x and point.y == neig_y:
+                        continue
+                    neigbour = Point(neig_x, neig_y)
+                    # check if the neighbour is anobstacle
+                    if self.is_obstacle(neigbour):
+                        continue
+                    adjPoints.append(neigbour)
+        else:
+            for i in range(-1, 2, 2):
+                neig_x = min(max(point.x+i, 0), self.cols - 1)
+                neig_y = min(max(point.y+i, 0), self.rows - 1)
                 if point.x == neig_x and point.y == neig_y:
                     continue
-                neigbour = Point(neig_x, neig_y)
-                # check if the neighbour is anobstacle
-                if self.is_obstacle(neigbour):
+                if self.is_obstacle(Point(neig_x, point.y)):
                     continue
-                adjPoints.append(neigbour)
+                if self.is_obstacle(Point(point.x, neig_y)):
+                    continue
+                adjPoints.append(Point(neig_x, point.y))
+                adjPoints.append(Point(point.x, neig_y))
         return adjPoints
 
     def is_obstacle(self, point):

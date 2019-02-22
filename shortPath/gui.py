@@ -1,5 +1,5 @@
 from PIL import Image, ImageDraw
-from tkinter import Tk, Canvas, Button
+from tkinter import Tk, Canvas, Button, Checkbutton
 from path import Point, PathFinder
 
 WIDTH = 600
@@ -18,6 +18,17 @@ class grid:
         self.endPointLoc = []
 
         self.gridArray = []
+
+        self.btn = Button(master, text='find', command=self.drawPath)
+        self.btn.pack()
+
+        self.btn0 = Button(master, text='restart', command=self.clearAll)
+        self.btn0.pack()
+
+        self.diagonals = False
+        self.allowDiagonals = Checkbutton(
+            app, text='Allow diagonals', command=self.toggleDiagonals)
+        self.allowDiagonals.pack()
 
         self.grid.bind('<Button-2>', self._drawObstacle)
         self.grid.bind('<B2-Motion>', self._drawObstacle)
@@ -85,7 +96,7 @@ class grid:
         for x in range(0, WIDTH, PIXEL):
             self.gridArray.append([])
             for y in range(0, HEIGHT, PIXEL):
-                self.gridArray[x // PIXEL].append(0)
+                self.gridArray[x // PIXEL].append('0')
                 if(self.cellColor(x, y) == (0, 0, 255)):
                     start = [x, y]
                     self.gridArray[x // PIXEL][y // PIXEL] = 'S'
@@ -105,7 +116,7 @@ class grid:
             startPoint = Point(startXY[0] // PIXEL, startXY[1] // PIXEL)
             endPoint = Point(endXY[0] // PIXEL, endXY[1] // PIXEL)
             a = PathFinder(field)
-            return a.shortest_path(startPoint, endPoint)
+            return a.shortest_path(startPoint, endPoint, diagonals=self.diagonals)
         else:
             return None
 
@@ -130,16 +141,13 @@ class grid:
         self.gridArray = []
         self.drawGrid()
 
+    def toggleDiagonals(self):
+        self.diagonals = not self.diagonals
+
 
 app = Tk()
 
 layout = grid(app, width=WIDTH, height=HEIGHT, bg='white')
 layout.drawGrid()
-
-btn = Button(app, text='find', command=layout.drawPath)
-btn.pack()
-
-btn2 = Button(app, text='restart', command=layout.clearAll)
-btn2.pack()
 
 app.mainloop()
