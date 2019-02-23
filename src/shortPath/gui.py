@@ -27,7 +27,7 @@ class grid:
 
         self.diagonals = False
         self.allowDiagonals = Checkbutton(
-            app, text='Allow diagonals', command=self.toggleDiagonals)
+            master, text='Allow diagonals', command=self.toggleDiagonals)
         self.allowDiagonals.pack()
 
         self.grid.bind('<Button-2>', self._drawObstacle)
@@ -38,6 +38,7 @@ class grid:
     def drawGrid(self):
         for x in range(PIXEL, HEIGHT, PIXEL):
             self.grid.create_line(0, x, WIDTH, x, fill="grey")
+
         for y in range(PIXEL, WIDTH, PIXEL):
             self.grid.create_line(y, 0, y, HEIGHT, fill="grey")
 
@@ -100,14 +101,18 @@ class grid:
                 if(self.cellColor(x, y) == (0, 0, 255)):
                     start = [x, y]
                     self.gridArray[x // PIXEL][y // PIXEL] = 'S'
+
                 if(self.cellColor(x, y) == (255, 0, 0)):
                     end = [x, y]
                     self.gridArray[x // PIXEL][y // PIXEL] = 'E'
+
                 if(self.cellColor(x, y) == (0, 0, 0)):
                     self.gridArray[x // PIXEL][y // PIXEL] = '#'
+
         for i in self.gridArray:
             print(i)
         print(start, end)
+
         return self.gridArray, start, end
 
     def getShortestPath(self):
@@ -137,7 +142,6 @@ class grid:
         self.draw = ImageDraw.Draw(self.image)
         self.startPointLoc = []
         self.endPointLoc = []
-
         self.gridArray = []
         self.drawGrid()
 
@@ -145,9 +149,12 @@ class grid:
         self.diagonals = not self.diagonals
 
 
-app = Tk()
+def test():
+    app = Tk()
+    layout = grid(app, width=WIDTH, height=HEIGHT, bg='white')
+    layout.drawGrid()
+    app.mainloop()
 
-layout = grid(app, width=WIDTH, height=HEIGHT, bg='white')
-layout.drawGrid()
 
-app.mainloop()
+if __name__ == '__main__':
+    test()
