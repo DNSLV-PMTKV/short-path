@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='shortPath',
-    version='0.0.3',
+    version='0.0.4',
     author='Danislav Pometkov',
     author_email='pometkov.d@gmail.com',
     description='Simple representation of BFS algorithm',

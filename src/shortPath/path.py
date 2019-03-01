@@ -70,17 +70,18 @@ class PathFinder:
                         continue
                     adjPoints.append(neigbour)
         else:
-            for i in range(-1, 2, 2):
+            for i in range(-1, 2):
                 neig_x = min(max(point.x+i, 0), self.cols - 1)
-                neig_y = min(max(point.y+i, 0), self.rows - 1)
-                if point.x == neig_x and point.y == neig_y:
-                    continue
-                if self.is_obstacle(Point(neig_x, point.y)):
-                    continue
-                if self.is_obstacle(Point(point.x, neig_y)):
-                    continue
-                adjPoints.append(Point(neig_x, point.y))
-                adjPoints.append(Point(point.x, neig_y))
+                for j in range(-1, 2):
+                    neig_y = min(max(point.y+j, 0), self.rows - 1)
+                    if point.x == neig_x:
+                        if self.is_obstacle(Point(point.x, neig_y)):
+                            continue
+                        adjPoints.append(Point(point.x, neig_y))
+                    if point.y == neig_y:
+                        if self.is_obstacle(Point(neig_x, point.y)):
+                            continue
+                        adjPoints.append(Point(neig_x, point.y))
         return adjPoints
 
     def is_obstacle(self, point):

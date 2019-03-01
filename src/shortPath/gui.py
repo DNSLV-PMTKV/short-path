@@ -1,5 +1,5 @@
 from PIL import Image, ImageDraw
-from tkinter import Tk, Canvas, Button, Checkbutton
+from tkinter import Tk, Canvas, Button, Checkbutton, messagebox
 from path import Point, PathFinder
 
 WIDTH = 600
@@ -112,7 +112,6 @@ class grid:
         for i in self.gridArray:
             print(i)
         print(start, end)
-
         return self.gridArray, start, end
 
     def getShortestPath(self):
